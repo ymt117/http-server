@@ -8,6 +8,7 @@ pub enum ContentType {
 	SVG,
 	TEXT,
 	XML,
+	ICO,
 }
 
 impl ContentType {
@@ -23,6 +24,7 @@ impl ContentType {
 			"svg" => ContentType::SVG,
 			"txt" => ContentType::TEXT,
 			"xml" => ContentType::XML,
+			"ico" => ContentType::ICO,
 			_ => ContentType::TEXT,
 		}
 	}
@@ -37,6 +39,7 @@ impl ContentType {
 			ContentType::SVG => "image/svg+xml",
 			ContentType::TEXT => "text/plain",
 			ContentType::XML => "application/xml",
+			ContentType::ICO => "image/ico",
 		}
 	}
 }
