@@ -53,20 +53,40 @@ pub struct Request {
 
 pub fn parse(buf: &[u8]) -> Request{
 	// 受け取ったリクエストを表示する
-	//println!("Request: {}", String::from_utf8_lossy(&buf[..]));
+	println!("Request: {}", String::from_utf8_lossy(&buf[..]));
 
-	let req = split_request(&buf);
-	//println!("{:#?}", req);
+	// リクエストを１行ずつ取り出す
+	let req_line = read_line(&buf);
+
+	// 開始行からメソッド、リクエスト対象（パス）、HTTPバージョンを取り出す
+	// ex) GET / HTTP/1.1
+	let start_line = split_request(req_line[0].as_bytes());
+
+	// ヘッダー行からHTTPヘッダーを取り出す
+	// ヘッダー行と本文の境目は改行文字「\r\n」だけの行で判断する
+	// ここに処理を書く
 
 	let request = Request {
-		method: req[0].clone(),
-		path: req[1].clone(),
-		http_version: req[2].clone(),
+		method: start_line[0].clone(),
+		path: start_line[1].clone(),
+		http_version: start_line[2].clone(),
 	};
 
 	return request;
+}
 
-	//println!("{:#?}",split_whitespace(&buf));
+fn read_line(bytes: &[u8]) -> Vec<String> {
+	let mut req: Vec<String> = Vec::new();
+	let mut sp: usize = 0; // sp: starting point
+
+	for (i, &item) in bytes.iter().enumerate() {
+		if item == b'\n' {
+			req.push(String::from_utf8(bytes[sp..i+1].to_vec()).unwrap());
+			sp = i + 1;
+		}
+	}
+	//println!("{:#?}", req);
+	req
 }
 
 fn split_request(bytes: &[u8]) -> Vec<String> {
@@ -74,18 +94,25 @@ fn split_request(bytes: &[u8]) -> Vec<String> {
 	let mut first_point: usize = 0;
 
 	for (i, &item) in bytes.iter().enumerate() {
-		if item == b' ' || item == b':' {
+		// 半角スペース「 」またはコロン「:」、改行文字「\r」で区切る
+		if item == b' ' || item == b':' || item == b'\r'{
 			req.push(String::from_utf8(bytes[first_point..i].to_vec()).unwrap());
-			first_point = i + 1;
-		}
-
-		if item == b'\r' || item == b'\n' {
-			// first_pointを変更する処理
 			first_point = i + 1;
 		}
 	}
 	//println!("Vector {:#?}", req);
 	req
+}
+
+
+#[test]
+fn test_split_request() {
+	let buf: &[u8] = "GET / HTTP/1.1\r\n".as_bytes();
+	let req = split_request(buf);
+
+	assert_eq!(req[0], "GET");
+	assert_eq!(req[1], "/");
+	assert_eq!(req[2], "HTTP/1.1");
 }
 
 #[test]
@@ -96,4 +123,19 @@ fn test_parse() {
 	assert_eq!(status_line.method, "GET");
 	assert_eq!(status_line.path, "/");
 	assert_eq!(status_line.http_version, "HTTP/1.1");
+}
+
+#[test]
+fn test_value_jpg() {
+	let content_type = ContentType::from_file_ext("jpg");
+	assert_eq!(content_type.value(), "image/jpeg");
+
+	let content_type = ContentType::from_file_ext("jpeg");
+	assert_eq!(content_type.value(), "image/jpeg");
+}
+
+#[test]
+fn test_value_html() {
+	let content_type = ContentType::from_file_ext("html");
+	assert_eq!(content_type.value(), "text/html");
 }

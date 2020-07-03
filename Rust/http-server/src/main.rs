@@ -16,8 +16,8 @@ fn response(mut path: String) -> (String, Vec<u8>) {
 
 	let ext = path.split(".").last().unwrap_or("");// extention:拡張子
 	let content_type = parser::ContentType::from_file_ext(ext);
-	println!("path: {}", path);
-	println!("content type: {:?}", content_type);
+	//println!("path: {}", path);
+	//println!("content type: {:?}", content_type);
 	
 	path.retain(|c| c != '/');
 	let file = File::open(path);
