@@ -51,6 +51,17 @@ pub struct Request {
 	http_version: String,
 }
 
+impl Request {
+	fn from_request_header(&self) -> String {
+		match &*self.method {
+			"GET" => "GET".to_string(),
+			"POST" => "POST".to_string(),
+			"PUT" => "PUT".to_string(),
+			_ => "Method not allowed".to_string(),// 405 Error
+		}
+	}
+}
+
 pub fn parse(buf: &[u8]) -> Request{
 	// 受け取ったリクエストを表示する
 	println!("Request: {}", String::from_utf8_lossy(&buf[..]));
@@ -138,4 +149,34 @@ fn test_value_jpg() {
 fn test_value_html() {
 	let content_type = ContentType::from_file_ext("html");
 	assert_eq!(content_type.value(), "text/html");
+}
+
+#[test]
+fn test_from_request_header_get() {
+	let request = Request {
+		method: "GET".to_string(),
+		path: "/".to_string(),
+		http_version: "HTTP/1.1".to_string(),
+	};
+	assert_eq!(request.from_request_header(), "GET");
+}
+
+#[test]
+fn test_from_request_header_post() {
+	let request = Request {
+		method: "POST".to_string(),
+		path: "/".to_string(),
+		http_version: "HTTP/1.1".to_string(),
+	};
+	assert_eq!(request.from_request_header(), "POST");
+}
+
+#[test]
+fn test_from_request_header_exception() {
+	let request = Request {
+		method: "HEAD".to_string(),
+		path: "/".to_string(),
+		http_version: "HTTP/1.1".to_string(),
+	};
+	assert_eq!(request.from_request_header(), "Method not allowed");
 }
