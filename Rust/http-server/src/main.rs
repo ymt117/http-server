@@ -27,8 +27,6 @@ fn main() -> io::Result<()> {
 	let listener = TcpListener::bind("0.0.0.0:12345")?;
 	println!("Server started!");
 
-	let keep_alive = false;
-
 	// ストリームを受け取る
 	for stream in listener.incoming() {
 		//let stream = stream.unwrap();
@@ -41,9 +39,6 @@ fn main() -> io::Result<()> {
 			Err(e) => println!("Error: {}", e),
 		}
 
-		if !keep_alive {
-			continue;
-		}
 	}
 
 	Ok(())
