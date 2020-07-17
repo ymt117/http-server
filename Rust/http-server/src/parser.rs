@@ -67,11 +67,11 @@ pub fn parse(buf: &[u8]) -> Request{
 	println!("Request: {}", String::from_utf8_lossy(&buf[..]));
 
 	// リクエストを１行ずつ取り出す
-	let req_line = read_line(&buf);
+	let req_lines = read_lines(&buf);
 
 	// 開始行からメソッド、リクエスト対象（パス）、HTTPバージョンを取り出す
 	// ex) GET / HTTP/1.1
-	let start_line = split_request(req_line[0].as_bytes());
+	let start_line = split_request_from_line(req_lines[0].as_bytes());
 
 	// ヘッダー行からHTTPヘッダーを取り出す
 	// ヘッダー行と本文の境目は改行文字「\r\n」だけの行で判断する
@@ -86,29 +86,39 @@ pub fn parse(buf: &[u8]) -> Request{
 	return request;
 }
 
-fn read_line(bytes: &[u8]) -> Vec<String> {
+fn read_lines(bytes: &[u8]) -> Vec<String> {
+	// 改行文字「\n」までを１行として取り出す
 	let mut req: Vec<String> = Vec::new();
-	let mut sp: usize = 0; // sp: starting point
+	let mut start: usize = 0;
 
 	for (i, &item) in bytes.iter().enumerate() {
 		if item == b'\n' {
-			req.push(String::from_utf8(bytes[sp..i+1].to_vec()).unwrap());
-			sp = i + 1;
+			// バイト列のスライスを[start..i+1]とすることで「\n」まで含める
+			req.push(String::from_utf8(bytes[start..i+1].to_vec()).unwrap());
+			start = i + 1;
 		}
 	}
 	//println!("{:#?}", req);
 	req
 }
 
-fn split_request(bytes: &[u8]) -> Vec<String> {
+fn split_request_from_line(bytes: &[u8]) -> Vec<String> {
 	let mut req: Vec<String> = Vec::new();
-	let mut first_point: usize = 0;
+	let mut start: usize = 0;
 
 	for (i, &item) in bytes.iter().enumerate() {
 		// 半角スペース「 」またはコロン「:」、改行文字「\r」で区切る
-		if item == b' ' || item == b':' || item == b'\r'{
-			req.push(String::from_utf8(bytes[first_point..i].to_vec()).unwrap());
-			first_point = i + 1;
+		if item == b' ' {
+			req.push(String::from_utf8(bytes[start..i].to_vec()).unwrap());
+			start = i + 1;
+		}
+		if item == b':' {
+			req.push(String::from_utf8(bytes[start..i].to_vec()).unwrap());
+			start = i + 1;
+		}
+		if item == b'\r' {
+			req.push(String::from_utf8(bytes[start..i].to_vec()).unwrap());
+			start = i + 1;
 		}
 	}
 	//println!("Vector {:#?}", req);

@@ -8,7 +8,8 @@ use std::io;
 use std::io::Read;
 
 fn handle_connection(mut stream: TcpStream) {
-	let mut buf = [0; 1024];
+	const BUFFER_SIZE: usize = 1024;
+	let mut buf = [0; BUFFER_SIZE];
 	stream.read(&mut buf).unwrap();
 
 	let req = parser::parse(&buf);
