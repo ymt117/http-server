@@ -46,8 +46,8 @@ impl ContentType {
 
 #[derive(Debug)]
 pub struct Request {
-	pub method: String,
-	pub path: String,
+	pub method:   String,
+	pub path:     String,
 	http_version: String,
 }
 
@@ -78,8 +78,8 @@ pub fn parse(buf: &[u8]) -> Request{
 	// ここに処理を書く
 
 	let request = Request {
-		method: start_line[0].clone(),
-		path: start_line[1].clone(),
+		method:       start_line[0].clone(),
+		path:         start_line[1].clone(),
 		http_version: start_line[2].clone(),
 	};
 
@@ -121,7 +121,7 @@ fn split_request_from_line(bytes: &[u8]) -> Vec<String> {
 			start = i + 1;
 		}
 	}
-	//println!("Vector {:#?}", req);
+	println!("Vector {:#?}", req);
 	req
 }
 
@@ -129,7 +129,7 @@ fn split_request_from_line(bytes: &[u8]) -> Vec<String> {
 #[test]
 fn test_split_request() {
 	let buf: &[u8] = "GET / HTTP/1.1\r\n".as_bytes();
-	let req = split_request(buf);
+	let req = split_request_from_line(buf);
 
 	assert_eq!(req[0], "GET");
 	assert_eq!(req[1], "/");
