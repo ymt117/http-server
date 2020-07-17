@@ -1,7 +1,6 @@
 use super::parser;
 use std::io::Read;
 use std::fs::File;
-use std::io::*;
 use std::io::ErrorKind;
 
 // /root以下のファイルのみアクセスを許可できるように

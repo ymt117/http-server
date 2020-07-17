@@ -14,32 +14,32 @@ pub enum ContentType {
 impl ContentType {
 	pub fn from_file_ext(ext: &str) -> ContentType {
 		match ext {
-			"css" => ContentType::CSS,
-			"gif" => ContentType::GIF,
-			"htm" => ContentType::HTML,
+			"css"  => ContentType::CSS,
+			"gif"  => ContentType::GIF,
+			"htm"  => ContentType::HTML,
 			"html" => ContentType::HTML,
 			"jpeg" => ContentType::JPEG,
-			"jpg" => ContentType::JPEG,
-			"png" => ContentType::PNG,
-			"svg" => ContentType::SVG,
-			"txt" => ContentType::TEXT,
-			"xml" => ContentType::XML,
-			"ico" => ContentType::ICO,
-			_ => ContentType::TEXT,
+			"jpg"  => ContentType::JPEG,
+			"png"  => ContentType::PNG,
+			"svg"  => ContentType::SVG,
+			"txt"  => ContentType::TEXT,
+			"xml"  => ContentType::XML,
+			"ico"  => ContentType::ICO,
+			_      => ContentType::TEXT,
 		}
 	}
 
 	pub fn value(&self) -> &str {
 		match *self {
-			ContentType::CSS => "text/css",
-			ContentType::GIF => "image/gif",
+			ContentType::CSS  => "text/css",
+			ContentType::GIF  => "image/gif",
 			ContentType::HTML => "text/html",
 			ContentType::JPEG => "image/jpeg",
-			ContentType::PNG => "image/png",
-			ContentType::SVG => "image/svg+xml",
+			ContentType::PNG  => "image/png",
+			ContentType::SVG  => "image/svg+xml",
 			ContentType::TEXT => "text/plain",
-			ContentType::XML => "application/xml",
-			ContentType::ICO => "image/ico",
+			ContentType::XML  => "application/xml",
+			ContentType::ICO  => "image/ico",
 		}
 	}
 }
@@ -54,10 +54,10 @@ pub struct Request {
 impl Request {
 	fn from_request_header(&self) -> String {
 		match &*self.method {
-			"GET" => "GET".to_string(),
+			"GET"  => "GET".to_string(),
 			"POST" => "POST".to_string(),
-			"PUT" => "PUT".to_string(),
-			_ => "Method not allowed".to_string(),// 405 Error
+			"PUT"  => "PUT".to_string(),
+			_      => "Method not allowed".to_string(),// 405 Error
 		}
 	}
 }

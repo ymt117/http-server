@@ -29,7 +29,6 @@ fn main() -> io::Result<()> {
 
 	// ストリームを受け取る
 	for stream in listener.incoming() {
-		//let stream = stream.unwrap();
 		match stream {
 			Ok(stream) => {
 				thread::spawn(|| {
