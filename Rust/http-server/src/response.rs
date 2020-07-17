@@ -14,7 +14,7 @@ fn get_path(path: String) -> String {
     return format!("{}{}", root, path)
 }
 
-pub fn build_response(mut path: String) -> (String, Vec<u8>) {
+pub fn build_response(mut path: String) -> (String, String, Vec<u8>) {
 	let mut status_line = "HTTP/1.1 200 OK\r\n";
 
     path = get_path(path);
@@ -25,7 +25,6 @@ pub fn build_response(mut path: String) -> (String, Vec<u8>) {
 	//println!("path: {}", path);
 	//println!("content type: {:?}", content_type);
 	
-	//path.retain(|c| c != '/');
 	let file = File::open(path);
 	let mut file = match file {
 		Ok(file) => file,
@@ -40,8 +39,13 @@ pub fn build_response(mut path: String) -> (String, Vec<u8>) {
 		},
     };
 
-	let mut contents = Vec::new();
-	file.read_to_end(&mut contents).unwrap();
+	let mut body = Vec::new();
+	file.read_to_end(&mut body).unwrap();
 
-	(format!("{}Content-Type: {}\r\n\r\n", status_line, content_type.value()), contents)
+	let header = format!("Content-Type: {}\r\n\r\n", content_type.value());
+
+	( status_line.to_string(),
+	  header,
+	  body
+	)
 }

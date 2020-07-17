@@ -15,10 +15,11 @@ fn handle_connection(mut stream: TcpStream) {
 	let req = parser::parse(&buf);
 
 	if req.method == "GET" {
-		let (res, contents) = response::build_response(req.path);
+		let (status_line, header, body) = response::build_response(req.path);
 
-		stream.write(res.as_bytes()).unwrap();
-		stream.write(&contents).unwrap();
+		stream.write(status_line.as_bytes()).unwrap();
+		stream.write(header.as_bytes()).unwrap();
+		stream.write(&body).unwrap();
 		stream.flush().unwrap();
 	}
 }
