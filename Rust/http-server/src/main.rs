@@ -8,16 +8,18 @@ use std::io;
 use std::io::Read;
 
 fn handle_connection(mut stream: TcpStream) {
-	let mut buf = [0; 1024];
+	const BUFFER_SIZE: usize = 1024;
+	let mut buf = [0; BUFFER_SIZE];
 	stream.read(&mut buf).unwrap();
 
 	let req = parser::parse(&buf);
 
 	if req.method == "GET" {
-		let (res, contents) = response::build_response(req.path);
+		let (status_line, header, body) = response::build_response(req.path);
 
-		stream.write(res.as_bytes()).unwrap();
-		stream.write(&contents).unwrap();
+		stream.write(status_line.as_bytes()).unwrap();
+		stream.write(header.as_bytes()).unwrap();
+		stream.write(&body).unwrap();
 		stream.flush().unwrap();
 	}
 }
@@ -29,7 +31,6 @@ fn main() -> io::Result<()> {
 
 	// ストリームを受け取る
 	for stream in listener.incoming() {
-		//let stream = stream.unwrap();
 		match stream {
 			Ok(stream) => {
 				thread::spawn(|| {
